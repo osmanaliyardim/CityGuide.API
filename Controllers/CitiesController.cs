@@ -52,10 +52,7 @@ namespace CityGuide.API.Controllers
         [Route("detail")]
         public IActionResult GetCitiesById(int cityId)
         {
-            // Sadece son kullanıcıya göstermek istediğimiz kolonları gönderiyoruz (DTO ile yapılır)
-            // AutoMapper ile daha kısa yapılabiliyor
             var city = _appRepository.GetCityById(cityId);
-            //.Select(x=> new CityForListDto { Id = x.Id, Name = x.Name, Description = x.Description, PhotoUrl = x.Photos.FirstOrDefault(x=>x.IsMain==true).Url }).ToList();
 
             var cityToReturn = _mapper.Map<CityForDetailDto>(city);
 
@@ -66,14 +63,8 @@ namespace CityGuide.API.Controllers
         [Route("photos")]
         public IActionResult GetPhotsByCity(int cityId)
         {
-            // Sadece son kullanıcıya göstermek istediğimiz kolonları gönderiyoruz (DTO ile yapılır)
-            // AutoMapper ile daha kısa yapılabiliyor
             var photos = _appRepository.GetPhotosByCities(cityId);
-            //.Select(x=> new CityForListDto { Id = x.Id, Name = x.Name, Description = x.Description, PhotoUrl = x.Photos.FirstOrDefault(x=>x.IsMain==true).Url }).ToList();
 
-            //var photosToReturn = _mapper.Map<List<CityForListDto>>(photos);
-
-            //return Ok(photosToReturn);
             return Ok(photos);
         }
     }
