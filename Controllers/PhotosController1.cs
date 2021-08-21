@@ -60,11 +60,11 @@ namespace CityGuide.API.Controllers
                         File = new FileDescription(file.Name, stream)
                     };
 
-                    uploadResult = _cloudinary.Upload(uploadParams);
+                    uploadResult = _cloudinary.Upload(uploadParams); //Cloud'a yükleme
                 }
             }
 
-            photoForCreationDto.Url = uploadResult.Uri.ToString();
+            photoForCreationDto.Url = uploadResult.Url.ToString(); //Property Uri is deprecated, please use Url instead
             photoForCreationDto.PublicId = uploadResult.PublicId;
 
             var photo = _mapper.Map<Photo>(photoForCreationDto);
@@ -72,12 +72,12 @@ namespace CityGuide.API.Controllers
 
             if (!city.Photos.Any(x => x.IsMain)) photo.IsMain = true; // Daha önce eklenmiş foto yoksa onu main yap (vitrin)
 
-            city.Photos.Add(photo);
+            city.Photos.Add(photo); //Db'ye kaydetme
 
             if (_appRepository.SaveAll())
             {
                 var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
-                return CreatedAtRoute("getphoto", new { id = photo.Id, photoToReturn });
+                return CreatedAtRoute("getphoto", new { id = photo.Id, photoToReturn }); //kayıt sonrası yönlendirme
             }
 
             return BadRequest("Could not add the photo!"); // Magic string!
