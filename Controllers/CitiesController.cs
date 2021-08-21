@@ -1,5 +1,7 @@
-﻿using CityGuide.API.Data;
+﻿using AutoMapper;
+using CityGuide.API.Data;
 using CityGuide.API.DTOs;
+using CityGuide.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,20 +16,34 @@ namespace CityGuide.API.Controllers
     public class CitiesController : ControllerBase
     {
         private IAppRepository _appRepository;
+        private IMapper _mapper;
 
-        public CitiesController(IAppRepository appRepository)
+        public CitiesController(IAppRepository appRepository, IMapper mapper)
         {
             _appRepository = appRepository;
+            _mapper = mapper;
         }
 
         public IActionResult GetCities()
         {
             // Sadece son kullanıcıya göstermek istediğimiz kolonları gönderiyoruz (DTO ile yapılır)
             // AutoMapper ile daha kısa yapılabiliyor
-            var cities = _appRepository.GetCities()
-                .Select(x=> new CityForListDto { Id = x.Id, Name = x.Name, Description = x.Description, PhotoUrl = x.Photos.FirstOrDefault(x=>x.IsMain==true).Url }).ToList();
+            var cities = _appRepository.GetCities();
+                //.Select(x=> new CityForListDto { Id = x.Id, Name = x.Name, Description = x.Description, PhotoUrl = x.Photos.FirstOrDefault(x=>x.IsMain==true).Url }).ToList();
 
-            return Ok(cities);
+            var citiesToReturn = _mapper.Map<List<CityForListDto>>(cities);
+
+            return Ok(citiesToReturn);
+        }
+
+        [HttpPost]
+        [Route("add")]
+        public IActionResult Add(City city)
+        {
+            _appRepository.Add(city);
+            _appRepository.SaveAll();
+
+            return Ok(city);
         }
     }
 }

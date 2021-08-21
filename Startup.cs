@@ -32,6 +32,8 @@ namespace CityGuide.API
             // DataContext çaðrýldýðýnda Sql Server kullan diyoruz
             services.AddDbContext<DataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
