@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using CityGuide.API.Helpers;
 
 namespace CityGuide.API
 {
@@ -35,6 +36,9 @@ namespace CityGuide.API
             // appsettings.json'da belirtilen DefaultConnection stringine baðlýyoruz
             // DataContext çaðrýldýðýnda Sql Server kullan diyoruz
             services.AddDbContext<DataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // appsettings.json'da belirtilen CloudinarySettings stringine baðlýyoruz
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             
             services.AddAutoMapper(typeof(Startup));
 
