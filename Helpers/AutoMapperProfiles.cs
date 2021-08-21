@@ -17,6 +17,8 @@ namespace CityGuide.API.Helpers
                 {
                     option.MapFrom(source => source.Photos.FirstOrDefault(x => x.IsMain).Url);
                 });
+
+            CreateMap<City, CityForDetailDto>();
         }
     }
 }

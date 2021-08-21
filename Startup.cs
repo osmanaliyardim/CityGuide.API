@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace CityGuide.API
 {
@@ -34,7 +35,12 @@ namespace CityGuide.API
             
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllers();
+            // reference looping error fix
+            services.AddControllers().AddNewtonsoftJson(opt =>
+            {
+                opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CityGuide.API", Version = "v1" });
