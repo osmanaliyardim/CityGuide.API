@@ -1,4 +1,5 @@
 ﻿using CityGuide.API.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,14 +41,35 @@ namespace CityGuide.API.Data
             }
         }
 
-        public Task<User> Login(string userName, string password)
+        public async Task<User> Login(string userName, string password)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+
+            if (user == null) return null;
+            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt)) return null;
+
+            return user;
         }
 
-        public Task<bool> UserExists(string userName)
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            throw new NotImplementedException();
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                for (int i = 0; i < computedHash.Length; i++)
+                {
+                    if (computedHash[i] != passwordHash[i]) return false;
+                }
+
+                return true;
+            }
+        }
+
+        public async Task<bool> UserExists(string userName)
+        {
+            if (await _context.Users.AnyAsync(x => x.UserName == userName)) return true;
+
+            return false;
         }
     }
 }
